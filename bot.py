@@ -32,37 +32,60 @@ savedata = {}
 @bot.message_handler(commands=['register'])
 def askname(message):
 	markup = types.ReplyKeyboardRemove(selective=False)
+	markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+	cancel = types.KeyboardButton('/cancel')
+	markup.add(cancel)
 	msg = bot.send_message(message.chat.id, "Ваше имя?", reply_markup=markup)
 	savedata["username"] = message.from_user.username
 	bot.register_next_step_handler(msg, process_name)
 
 def process_name(message):
+	markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+	cancel = types.KeyboardButton('/cancel')
+	markup.add(cancel)
 	try:
+		if message.text == "/cancel":
+			markup = types.ReplyKeyboardRemove(selective=False)
+			msg = bot.send_message(message.chat.id, "Отмена", reply_markup=markup)
+			return
 		if validate_string(message.text):
 			savedata["name"] = message.text
-			msg = bot.send_message(message.chat.id, "Ваша фамилия?")
+			msg = bot.send_message(message.chat.id, "Ваша фамилия?", reply_markup=markup)
 			bot.register_next_step_handler(msg, process_last_name)
 		else:
-			msg = bot.send_message(message.chat.id, "Введите имя. Оно должно содержать только буквы, и никаких знаков и цифр.")
+			msg = bot.send_message(message.chat.id, "Введите имя. Оно должно содержать только буквы, и никаких знаков и цифр.", reply_markup=markup)
 			bot.register_next_step_handler(msg, process_name)
 	except Exception as e:
 		bot.reply_to(message, e)
 
 def process_last_name(message):
+	markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+	cancel = types.KeyboardButton('/cancel')
+	markup.add(cancel)
 	try:
+		if message.text == "/cancel":
+			markup = types.ReplyKeyboardRemove(selective=False)
+			msg = bot.send_message(message.chat.id, "Отмена", reply_markup=markup)
+			return
+
 		if validate_string(message.text):
 			savedata["last_name"] = message.text
-			msg = bot.send_message(message.chat.id, "Ваш возраст?")
+			msg = bot.send_message(message.chat.id, "Ваш возраст?", reply_markup=markup)
 			bot.register_next_step_handler(msg, process_age)
 		else:
-			msg = bot.send_message(message.chat.id, "Введите фамилию. Она должна содержать только буквы, и никаких знаков и цифр.")
+			msg = bot.send_message(message.chat.id, "Введите фамилию. Она должна содержать только буквы, и никаких знаков и цифр.", reply_markup=markup)
 			bot.register_next_step_handler(msg, process_last_name)
 	except Exception as e:
 		bot.reply_to(message, e)
 
 
 def process_age(message):
+
 	try:
+		if message.text == "/cancel":
+			markup = types.ReplyKeyboardRemove(selective=False)
+			msg = bot.send_message(message.chat.id, "Отмена", reply_markup=markup)
+			return
 		if validate_digits(message.text):
 			savedata["age"] = message.text
 			markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
@@ -175,6 +198,9 @@ def update_own_record_prompt(message):
 def update_own_record(message):
 	if message.text == "Да":
 		markup = types.ReplyKeyboardRemove(selective=False)
+		markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+		cancel = types.KeyboardButton('/cancel')
+		markup.add(cancel)
 		msg = bot.send_message(message.chat.id, "Введите новое имя.", reply_markup=markup)
 		savedata["username"] = message.from_user.username
 		bot.register_next_step_handler(msg, upd_process_name)
@@ -183,7 +209,14 @@ def update_own_record(message):
 		msg = bot.send_message(message.chat.id, "Отмена обновления анкеты.", reply_markup=markup)
 
 def upd_process_name(message):
+	markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+	cancel = types.KeyboardButton('/cancel')
+	markup.add(cancel)
 	try:
+		if message.text == "/cancel":
+			markup = types.ReplyKeyboardRemove(selective=False)
+			msg = bot.send_message(message.chat.id, "Отмена", reply_markup=markup)
+			return
 		if validate_string(message.text):
 			savedata["name"] = message.text
 			msg = bot.send_message(message.chat.id, "Введите новую фамилию.")
@@ -195,7 +228,14 @@ def upd_process_name(message):
 		bot.reply_to(message, e)
 
 def upd_process_last_name(message):
+	markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+	cancel = types.KeyboardButton('/cancel')
+	markup.add(cancel)
 	try:
+		if message.text == "/cancel":
+			markup = types.ReplyKeyboardRemove(selective=False)
+			msg = bot.send_message(message.chat.id, "Отмена", reply_markup=markup)
+			return
 		if validate_string(message.text):
 			savedata["last_name"] = message.text
 			msg = bot.send_message(message.chat.id, "Введите новый возраст.")
@@ -208,7 +248,14 @@ def upd_process_last_name(message):
 
 
 def upd_process_age(message):
+	markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+	cancel = types.KeyboardButton('/cancel')
+	markup.add(cancel)
 	try:
+		if message.text == "/cancel":
+			markup = types.ReplyKeyboardRemove(selective=False)
+			msg = bot.send_message(message.chat.id, "Отмена", reply_markup=markup)
+			return
 		if validate_digits(message.text):
 			savedata["age"] = message.text
 			markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
@@ -237,8 +284,6 @@ def upd_process_update(message):
 			msg = bot.send_message(message.chat.id, "Ваши данные успешно изменены.", reply_markup=markup)
 		except Exception as e:
 			print(e)
-			# markup = types.ReplyKeyboardRemove(selective=False)
-			# msg = bot.send_message(message.chat.id, "Вы уже зарегестрированы в нашей базе данных.", reply_markup=markup)
 	elif message.text == "Нет":
 		markup = types.ReplyKeyboardRemove(selective=False)
 		msg = bot.send_message(message.chat.id, "Отмена обновления анкеты.", reply_markup=markup)
